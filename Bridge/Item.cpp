@@ -80,7 +80,6 @@ int Item::type() const
 }
 
 void Item::display() {
-	//
 	QFile file(":/Bridge/in.txt");
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
