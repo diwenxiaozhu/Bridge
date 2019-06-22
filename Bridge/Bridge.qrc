@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/Bridge">
+        <file>Resources/bridge.png</file>
+        <file>nd.txt</file>
+        <file>wy.txt</file>
+        <file>yb.txt</file>
+    </qresource>
+</RCC>

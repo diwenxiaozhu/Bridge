@@ -1,0 +1,27 @@
+#pragma once
+#include <QGraphicsRectItem>
+#include <QGraphicsScene>
+
+
+// ×Ô¶¨Òå Scene
+class Scene : public QGraphicsScene
+{
+	Q_OBJECT
+signals:
+	void delWYsignal();
+
+	void delNDsignal();
+
+	void delYBsignal();
+public:
+
+protected:
+	// ×ó¼ü£ºÌí¼Óitem  ÓÒ¼ü£ºÒÆ³ýitem
+	void mousePressEvent(QGraphicsSceneMouseEvent *event);
+	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+	//Ë«»÷ÐÞ¸ÄÊôÐÔ
+	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+	// Backspace¼üÒÆ³ýitem
+	void keyPressEvent(QKeyEvent *event);
+
+};
