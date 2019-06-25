@@ -7,6 +7,8 @@
 #include "QMessageBox"
 #include <QtCharts/QtCharts>
 #include <QtCharts/QLineSeries>
+#include <qtableview.h>
+#include <qstringliteral.h>
 
 
 // 自定义 Item
@@ -14,7 +16,7 @@ NDItem::NDItem(QGraphicsItem *parent)
 	: Item(parent)
 {
 	//默认初始化属性
-	unit = "cm";
+	unit = "mm";
 	//位移传感器 默认绿色
 	setBrush(QBrush(Qt::green));
 }
@@ -57,6 +59,7 @@ QString NDItem::getInfo() {
 
 void NDItem::display() {
 	// 打开文件
+	//int count = 0;
 	QFile file(":/Bridge/nd.txt");
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
@@ -64,14 +67,21 @@ void NDItem::display() {
 		return;
 	}
 
+	QStandardItemModel *model =new QStandardItemModel (10, 4);
+	QTableView *tableview = new QTableView();
+	tableview->setModel(model);
+	model->setHeaderData(0, Qt::Horizontal, QObject::tr("Day"));
+	model->setHeaderData(1, Qt::Horizontal, QObject::tr("Time"));
+	model->setHeaderData(2, Qt::Horizontal, QObject::tr("Number"));
+	model->setHeaderData(3, Qt::Horizontal, QObject::tr("Value/mm"));
 	QLineSeries *series = new QLineSeries();
 	bool flag = false;
+	int row = 0;
 	while (!file.atEnd())
 	{
 		QByteArray line = file.readLine();
 
 		QString str(line);
-
 		qDebug() << str;
 		//分割字符串
 		QStringList list = str.split("	");
@@ -85,6 +95,12 @@ void NDItem::display() {
 			qDebug() << list[0] << list[1] << tt.date();
 			//插入此数据
 			series->append(tt.toMSecsSinceEpoch(), list[3].toDouble());
+			model->insertRows(row, 1, QModelIndex());
+			model->setData(model->index(row, 0, QModelIndex()), list[0]);
+			model->setData(model->index(row, 1, QModelIndex()), list[1]);
+			model->setData(model->index(row, 2, QModelIndex()), list[2]);
+			model->setData(model->index(row, 3, QModelIndex()), list[3]);
+			row++;
 		}
 	}
 	file.close();
@@ -93,9 +109,8 @@ void NDItem::display() {
 		return;
 	}
 
-
 	//chart
-	QChart *chart = new QChart();
+	QChart *chart = new QChart();	
 	// 将图例隐藏
 	chart->legend()->hide();
 	// 关联series，这一步很重要，必须要将series关联到QChart才能将数据渲染出来：
@@ -126,4 +141,8 @@ void NDItem::display() {
 	// 显示图表
 
 	view->show();
+
+	tableview->setWindowTitle(QStringLiteral("挠度检测器"));
+	tableview->resize(450, 350);
+	tableview->show();
 }

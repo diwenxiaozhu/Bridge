@@ -5,6 +5,8 @@
 #include "QMessageBox"
 #include <QtCharts/QtCharts>
 #include <QtCharts/QLineSeries>
+#include <qstringliteral.h>
+
 
 // 自定义 Item
 WYItem::WYItem(QGraphicsItem *parent)
@@ -19,7 +21,7 @@ WYItem::WYItem(QGraphicsItem *parent)
 
 void WYItem::change() {
 	AttributeForm *changeform = new AttributeForm();
-	connect(changeform, SIGNAL(change()), this, SLOT(setAttribute(QStringList)));
+	connect(changeform, SIGNAL(change(QStringList)), this, SLOT(setAttribute(QStringList)));
 	changeform->ui.proWaveLabel->hide();
 	changeform->ui.proWaveText->hide();
 	changeform->ui.unitLabel->hide();
@@ -39,6 +41,7 @@ void WYItem::change() {
 
 void WYItem::setAttribute(QStringList info) {
 	setName(info[0]);
+	qDebug() << info[0];
 	setModel(info[1]);
 	setProduce(info[2]);
 	setDate(QDate::fromString(info[3], "yyyy/M/d"));
@@ -61,8 +64,16 @@ void WYItem::display() {
 		return;
 	}
 
+	QStandardItemModel *model = new QStandardItemModel(10, 4);
+	QTableView *tableview = new QTableView();
+	tableview->setModel(model);
+	model->setHeaderData(0, Qt::Horizontal, QObject::tr("Day"));
+	model->setHeaderData(1, Qt::Horizontal, QObject::tr("Time"));
+	model->setHeaderData(2, Qt::Horizontal, QObject::tr("Number"));
+	model->setHeaderData(3, Qt::Horizontal, QObject::tr("Offset Value/cm"));
 	QLineSeries *series = new QLineSeries();
 	bool flag = false;
+	int row = 0;
 	while (!file.atEnd())
 	{
 		QByteArray line = file.readLine();
@@ -79,6 +90,12 @@ void WYItem::display() {
 			qDebug() << list[0] << list[1] << tt.date();
 			//插入此数据
 			series->append(tt.toMSecsSinceEpoch(), list[3].toDouble());
+			model->insertRows(row, 1, QModelIndex());
+			model->setData(model->index(row, 0, QModelIndex()), list[0]);
+			model->setData(model->index(row, 1, QModelIndex()), list[1]);
+			model->setData(model->index(row, 2, QModelIndex()), list[2]);
+			model->setData(model->index(row, 3, QModelIndex()), list[3]);
+			row++;
 		}
 	}
 	file.close();
@@ -104,7 +121,7 @@ void WYItem::display() {
 	series->attachAxis(axisX);
 
 	QValueAxis *axisY = new QValueAxis;
-	axisY->setLabelFormat("%.2lf");
+	axisY->setLabelFormat("%.f");
 	axisY->setTitleText("value");
 	chart->addAxis(axisY, Qt::AlignLeft);
 	series->attachAxis(axisY);
@@ -115,4 +132,8 @@ void WYItem::display() {
 	view->resize(1000, 900);
 	// 显示图表
 	view->show();
+
+	tableview->setWindowTitle(QStringLiteral("位移检测器"));
+	tableview->resize(450, 350);
+	tableview->show();
 }
