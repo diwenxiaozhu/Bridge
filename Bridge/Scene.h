@@ -23,5 +23,4 @@ protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 	// Backspace¼üÒÆ³ýitem
 	void keyPressEvent(QKeyEvent *event);
-
 };

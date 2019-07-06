@@ -13,5 +13,6 @@ private:
 	double maxD;        //量程上限
 	double minD;        //量程下限
 public slots:
+	//修改属性槽函数
 	void setAttribute(QStringList info);
 };

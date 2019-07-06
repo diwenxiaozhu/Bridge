@@ -42,7 +42,6 @@ protected:
 	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 	//重写鼠标双击事件
 	virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
 	// 使item可使用qgraphicsitem_cast
 	int type() const;
 private:
